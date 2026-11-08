@@ -1,0 +1,13 @@
+# PAI backend — pinned dependency set (Python 3.13)
+Django==5.2.6
+djangorestframework==3.16.1
+djangorestframework-simplejwt==5.5.1
+django-cors-headers==4.7.0
+django-ratelimit==4.1.0
+drf-spectacular==0.28.0
+stripe==14.2.0
+Pillow==11.3.0
+
+# Production server
+gunicorn==23.0.0
+whitenoise==6.9.0

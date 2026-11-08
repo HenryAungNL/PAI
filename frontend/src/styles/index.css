@@ -1,0 +1,118 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/*
+ * PAI design tokens (light theme).
+ * Values are HSL triplets consumed by tailwind.config.ts.
+ */
+@layer base {
+  :root {
+    --background: 0 0% 100%; /* #FFFFFF */
+    --foreground: 0 0% 9%; /* #171717 */
+    --surface: 30 100% 98%; /* #FFF7ED */
+    --card: 0 0% 100%;
+    --card-foreground: 0 0% 9%;
+    --muted: 30 100% 98%;
+    --muted-foreground: 0 0% 45%; /* #737373 */
+    --border: 220 13% 91%; /* #E5E7EB */
+    --input: 220 13% 91%;
+    --ring: 25 95% 53%; /* #F97316 */
+    --primary: 25 95% 53%; /* #F97316 */
+    --primary-foreground: 0 0% 100%;
+    --radius: 0.75rem;
+  }
+
+  /* Dark mode scaffolding — enabled later by adding `class="dark"`. */
+  .dark {
+    --background: 0 0% 7%;
+    --foreground: 0 0% 98%;
+    --surface: 20 15% 12%;
+    --card: 0 0% 10%;
+    --card-foreground: 0 0% 98%;
+    --muted: 0 0% 15%;
+    --muted-foreground: 0 0% 64%;
+    --border: 0 0% 20%;
+    --input: 0 0% 20%;
+  }
+
+  * {
+    @apply border-border;
+  }
+
+  html {
+    -webkit-text-size-adjust: 100%;
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply bg-background text-foreground font-sans antialiased;
+    font-feature-settings: "cv11", "ss01";
+    text-rendering: optimizeLegibility;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    @apply font-display tracking-tight;
+  }
+
+  /* Visible, accessible focus ring across the app. */
+  :focus-visible {
+    @apply outline-none ring-2 ring-ring ring-offset-2 ring-offset-background;
+  }
+
+  ::selection {
+    background: #fed7aa;
+    color: #171717;
+  }
+}
+
+@layer components {
+  .pai-container {
+    @apply container;
+  }
+
+  /* Skip link for keyboard users. */
+  .skip-link {
+    @apply sr-only;
+  }
+  .skip-link:focus {
+    @apply not-sr-only absolute left-4 top-4 z-50 rounded-md bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground;
+  }
+
+  /* Skeleton shimmer used by loading states. */
+  .skeleton {
+    @apply relative overflow-hidden rounded-md bg-neutral-100;
+  }
+  .skeleton::after {
+    @apply absolute inset-0 -translate-x-full animate-[shimmer_1.6s_infinite];
+    content: "";
+    background-image: linear-gradient(
+      90deg,
+      rgba(255, 255, 255, 0) 0,
+      rgba(255, 255, 255, 0.6) 50%,
+      rgba(255, 255, 255, 0) 100%
+    );
+  }
+
+  /* Thin, tasteful scrollbars for dashboards. */
+  .scrollbar-thin {
+    scrollbar-width: thin;
+    scrollbar-color: #d4d4d4 transparent;
+  }
+  .scrollbar-thin::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+  .scrollbar-thin::-webkit-scrollbar-thumb {
+    @apply rounded-full bg-neutral-300;
+  }
+}
+
+@media print {
+  .no-print {
+    display: none !important;
+  }
+}

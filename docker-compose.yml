@@ -1,0 +1,67 @@
+# ---------------------------------------------------------------------------
+# PAI — full stack for a one-command demo.
+#
+#   docker compose up --build
+#
+# In a second terminal, create the demo catalogue and accounts (idempotent):
+#
+#   docker compose exec backend python manage.py seed_demo_data
+#
+# Then open http://localhost:8080
+#
+# Demo sign-ins (created by the seeder):
+#   admin@pai.demo / instructor: amara.okafor@pai.demo / student: student@pai.demo
+#   password for all three: PaiDemo!2024
+#
+# Any value below can be overridden from a root `.env` file (see `.env.example`).
+# ---------------------------------------------------------------------------
+name: pai
+
+services:
+  backend:
+    build:
+      context: ./backend
+    image: pai-backend:latest
+    environment:
+      DJANGO_SECRET_KEY: ${DJANGO_SECRET_KEY:-insecure-docker-demo-key-change-me}
+      DJANGO_DEBUG: ${DJANGO_DEBUG:-True}
+      DJANGO_ALLOWED_HOSTS: ${DJANGO_ALLOWED_HOSTS:-localhost,127.0.0.1,backend}
+      DJANGO_CSRF_TRUSTED_ORIGINS: ${DJANGO_CSRF_TRUSTED_ORIGINS:-http://localhost:8080,http://127.0.0.1:8080}
+      CORS_ALLOWED_ORIGINS: ${CORS_ALLOWED_ORIGINS:-http://localhost:8080}
+      SITE_URL: ${SITE_URL:-http://localhost:8080}
+      COOKIE_SECURE: ${COOKIE_SECURE:-False}
+      COOKIE_SAMESITE: ${COOKIE_SAMESITE:-Lax}
+      STRIPE_PUBLIC_KEY: ${STRIPE_PUBLIC_KEY:-}
+      STRIPE_SECRET_KEY: ${STRIPE_SECRET_KEY:-}
+      STRIPE_WEBHOOK_SECRET: ${STRIPE_WEBHOOK_SECRET:-}
+      PLATFORM_NAME: ${PLATFORM_NAME:-PAI}
+      SUPPORT_EMAIL: ${SUPPORT_EMAIL:-support@pai.example.com}
+      PAI_DATA_DIR: /app/data
+    volumes:
+      # SQLite database + uploaded media persist across restarts.
+      - pai_data:/app/data
+    expose:
+      - "8000"
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 5s
+      start_period: 30s
+      retries: 5
+
+  frontend:
+    build:
+      context: ./frontend
+      args:
+        VITE_API_BASE_URL: /api/v1
+    image: pai-frontend:latest
+    ports:
+      - "8080:80"
+    depends_on:
+      backend:
+        condition: service_healthy
+    restart: unless-stopped
+
+volumes:
+  pai_data:
